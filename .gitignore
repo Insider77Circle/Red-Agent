@@ -1,0 +1,11 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+venv/
+data/proxies.json
+data/redagent.log
+data/rotation.json
+*.egg-info/
+dist/
+build/
