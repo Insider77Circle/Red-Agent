@@ -17,6 +17,10 @@ Traditional proxy management requires memorizing complex commands and manual con
 - **Providing security assurance** through comprehensive auditing
 - **Integrating seamlessly** with existing security tools
 
+## 🎬 Demo
+
+https://github.com/Insider77Circle/Red-Agent/raw/main/assets/redagent-demo.mp4
+
 ## 🚀 Quick Start
 
 ### Installation
