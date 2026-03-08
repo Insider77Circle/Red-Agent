@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RedAgent — AI-Powered Proxy Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --red:    #ff0044;
+      --red2:   #cc0033;
+      --red3:   #880022;
+      --cyan:   #00ffcc;
+      --green:  #00ff41;
+      --bg:     #05000a;
+      --bg2:    #0d0018;
+      --bg3:    #130024;
+      --text:   #ccd6f6;
+      --muted:  #8892b0;
+      --mono:   'Share Tech Mono', monospace;
+      --head:   'Orbitron', sans-serif;
+      --body:   'Inter', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      overflow-x: hidden;
+    }
+
+    /* ─── MATRIX CANVAS ─── */
+    #matrix {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      opacity: 0.07;
+      pointer-events: none;
+    }
+
+    /* scanline overlay */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,0,0,.06) 2px, rgba(0,0,0,.06) 4px
+      );
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2.5rem;
+      background: rgba(5,0,10,.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,0,68,.2);
+    }
+    .nav-logo {
+      font-family: var(--head);
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--red);
+      text-shadow: 0 0 20px var(--red);
+      letter-spacing: 3px;
+    }
+    .nav-logo span { color: var(--cyan); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .85rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: color .2s, text-shadow .2s;
+    }
+    .nav-links a:hover {
+      color: var(--cyan);
+      text-shadow: 0 0 10px var(--cyan);
+    }
+    .nav-cta {
+      background: transparent;
+      border: 1px solid var(--red);
+      color: var(--red) !important;
+      padding: .4rem 1rem;
+      border-radius: 3px;
+      transition: background .2s, box-shadow .2s !important;
+    }
+    .nav-cta:hover {
+      background: rgba(255,0,68,.15) !important;
+      box-shadow: 0 0 15px rgba(255,0,68,.4) !important;
+      color: var(--red) !important;
+    }
+
+    /* ─── HERO ─── */
+    #hero {
+      position: relative; z-index: 2;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+      overflow: hidden;
+    }
+
+    .hero-badge {
+      font-family: var(--mono);
+      font-size: .75rem;
+      color: var(--green);
+      border: 1px solid rgba(0,255,65,.3);
+      padding: .3rem .8rem;
+      border-radius: 20px;
+      margin-bottom: 1.5rem;
+      letter-spacing: 2px;
+      animation: pulse-badge 2s infinite;
+    }
+    @keyframes pulse-badge {
+      0%,100% { box-shadow: 0 0 5px rgba(0,255,65,.3); }
+      50% { box-shadow: 0 0 20px rgba(0,255,65,.6); }
+    }
+
+    .hero-title {
+      font-family: var(--head);
+      font-size: clamp(3rem, 10vw, 7rem);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: 4px;
+      position: relative;
+      margin-bottom: 0.5rem;
+    }
+    .hero-title .red-part {
+      color: var(--red);
+      text-shadow:
+        0 0 20px rgba(255,0,68,.8),
+        0 0 60px rgba(255,0,68,.4),
+        0 0 120px rgba(255,0,68,.2);
+      display: inline-block;
+      animation: glitch 4s infinite;
+    }
+    .hero-title .white-part {
+      color: #fff;
+      text-shadow: 0 0 30px rgba(255,255,255,.3);
+    }
+
+    @keyframes glitch {
+      0%, 90%, 100% { transform: translate(0,0) skew(0deg); filter: none; }
+      91% { transform: translate(-3px,0) skew(-1deg); filter: hue-rotate(180deg); }
+      92% { transform: translate(3px,0) skew(1deg); }
+      93% { transform: translate(-1px,0) skew(0deg); filter: none; }
+      95% { transform: translate(2px,1px) skew(.5deg); filter: hue-rotate(90deg); }
+      97% { transform: translate(-2px,-1px) skew(-.5deg); filter: none; }
+    }
+
+    .hero-subtitle {
+      font-family: var(--mono);
+      font-size: clamp(.9rem, 2vw, 1.1rem);
+      color: var(--cyan);
+      margin-bottom: 1rem;
+      text-shadow: 0 0 15px var(--cyan);
+      letter-spacing: 2px;
+    }
+
+    .hero-desc {
+      max-width: 640px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+
+    .btn {
+      font-family: var(--head);
+      font-size: .8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: .8rem 2rem;
+      border-radius: 3px;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary {
+      background: var(--red);
+      color: #fff;
+      box-shadow: 0 0 25px rgba(255,0,68,.5);
+    }
+    .btn-primary:hover { box-shadow: 0 0 40px rgba(255,0,68,.8); }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      box-shadow: 0 0 15px rgba(0,255,204,.2);
+    }
+    .btn-outline:hover { box-shadow: 0 0 30px rgba(0,255,204,.5); }
+
+    /* terminal typewriter in hero */
+    .hero-terminal {
+      margin-top: 3rem;
+      background: rgba(0,0,0,.7);
+      border: 1px solid rgba(255,0,68,.3);
+      border-radius: 8px;
+      width: min(600px, 90vw);
+      text-align: left;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(255,0,68,.1), 0 20px 60px rgba(0,0,0,.5);
+    }
+    .terminal-bar {
+      background: rgba(255,0,68,.1);
+      padding: .6rem 1rem;
+      display: flex; align-items: center; gap: .5rem;
+      border-bottom: 1px solid rgba(255,0,68,.2);
+    }
+    .terminal-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .td-red   { background: #ff5f57; }
+    .td-yell  { background: #febc2e; }
+    .td-green { background: #28c840; }
+    .terminal-title {
+      font-family: var(--mono); font-size: .75rem;
+      color: var(--muted); margin-left: .5rem;
+    }
+    .terminal-body {
+      padding: 1.2rem 1.5rem;
+      font-family: var(--mono);
+      font-size: .85rem;
+      line-height: 1.8;
+      min-height: 140px;
+    }
+    .t-prompt { color: var(--red); }
+    .t-cmd    { color: #fff; }
+    .t-out    { color: var(--green); }
+    .t-info   { color: var(--cyan); }
+    .t-warn   { color: #ffcc00; }
+    .cursor   {
+      display: inline-block; width: 8px; height: 1em;
+      background: var(--green); vertical-align: text-bottom;
+      animation: blink .8s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* ─── STATS ─── */
+    #stats {
+      position: relative; z-index: 2;
+      padding: 3rem 2rem;
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem;
+      background: linear-gradient(180deg, transparent, rgba(255,0,68,.05), transparent);
+      border-top: 1px solid rgba(255,0,68,.15);
+      border-bottom: 1px solid rgba(255,0,68,.15);
+    }
+    .stat-item { text-align: center; }
+    .stat-num {
+      font-family: var(--head);
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--red);
+      text-shadow: 0 0 20px rgba(255,0,68,.5);
+    }
+    .stat-label {
+      font-family: var(--mono);
+      font-size: .75rem;
+      color: var(--muted);
+      letter-spacing: 2px;
+      margin-top: .3rem;
+    }
+
+    /* ─── SECTION BASE ─── */
+    section {
+      position: relative; z-index: 2;
+      padding: 5rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-tag {
+      font-family: var(--mono);
+      font-size: .75rem;
+      color: var(--red);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: .5rem;
+    }
+    .section-title {
+      font-family: var(--head);
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 1rem;
+    }
+    .section-title span { color: var(--red); }
+    .section-sub {
+      color: var(--muted);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 3rem;
+    }
+
+    /* ─── FEATURES ─── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .feature-card {
+      background: rgba(13,0,24,.7);
+      border: 1px solid rgba(255,0,68,.15);
+      border-radius: 8px;
+      padding: 1.8rem;
+      transition: border-color .3s, transform .3s, box-shadow .3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--red), transparent);
+      opacity: 0; transition: opacity .3s;
+    }
+    .feature-card:hover {
+      border-color: rgba(255,0,68,.5);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 40px rgba(255,0,68,.15);
+    }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-icon { font-size: 2rem; margin-bottom: 1rem; display: block; }
+    .feature-name {
+      font-family: var(--head); font-size: 1rem; color: #fff;
+      margin-bottom: .6rem; letter-spacing: 1px;
+    }
+    .feature-desc { color: var(--muted); font-size: .9rem; line-height: 1.65; }
+    .feature-tags { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: .4rem; }
+    .tag {
+      font-family: var(--mono); font-size: .65rem; padding: .2rem .5rem;
+      border-radius: 3px; background: rgba(255,0,68,.1);
+      border: 1px solid rgba(255,0,68,.25); color: var(--red);
+    }
+
+    /* ─── ARCHITECTURE ─── */
+    #architecture { text-align: center; }
+    .arch-diagram { display: flex; flex-direction: column; align-items: center; gap: 0; margin-top: 2rem; }
+    .arch-row { display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+    .arch-node {
+      background: rgba(13,0,24,.9); border: 1px solid rgba(255,0,68,.3);
+      border-radius: 6px; padding: .7rem 1.2rem; font-family: var(--mono);
+      font-size: .8rem; color: var(--text); text-align: center; min-width: 120px;
+      transition: border-color .3s, box-shadow .3s; cursor: default;
+    }
+    .arch-node:hover { border-color: var(--red); box-shadow: 0 0 20px rgba(255,0,68,.3); color: #fff; }
+    .arch-node.primary { border-color: var(--red); color: var(--red); box-shadow: 0 0 15px rgba(255,0,68,.2); font-weight: bold; }
+    .arch-node.cyan { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 15px rgba(0,255,204,.15); }
+    .arch-node.green { border-color: var(--green); color: var(--green); box-shadow: 0 0 15px rgba(0,255,65,.15); }
+    .arch-arrow { color: rgba(255,0,68,.5); font-size: 1.4rem; line-height: 1; margin: .3rem 0; }
+
+    /* ─── CHAIN VIZ ─── */
+    .chain-demo {
+      margin: 3rem 0; padding: 2rem;
+      background: rgba(0,0,0,.5); border: 1px solid rgba(0,255,204,.15);
+      border-radius: 8px; text-align: center;
+    }
+    .chain-title { font-family: var(--mono); font-size: .75rem; color: var(--cyan); letter-spacing: 2px; margin-bottom: 1.5rem; }
+    .chain-hops { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0; }
+    .hop { display: flex; flex-direction: column; align-items: center; gap: .3rem; }
+    .hop-box {
+      background: rgba(13,0,24,.9); border: 1px solid rgba(0,255,204,.3);
+      border-radius: 6px; padding: .6rem 1rem; font-family: var(--mono);
+      font-size: .75rem; color: var(--cyan); min-width: 80px; text-align: center;
+      animation: hop-pulse 3s infinite;
+    }
+    .hop-box.you { border-color: var(--red); color: var(--red); }
+    .hop-box.target { border-color: var(--green); color: var(--green); }
+    .hop-flag { font-size: 1.1rem; }
+    @keyframes hop-pulse {
+      0%,100% { box-shadow: 0 0 5px rgba(0,255,204,.2); }
+      50% { box-shadow: 0 0 15px rgba(0,255,204,.5); }
+    }
+    .hop-arrow { font-family: var(--mono); font-size: .8rem; color: rgba(0,255,204,.4); padding: 0 .3rem; align-self: center; margin-bottom: 1.4rem; }
+    .hop-label { font-family: var(--mono); font-size: .6rem; color: var(--muted); }
+    .encrypted-label { font-family: var(--mono); font-size: .65rem; color: rgba(0,255,204,.4); margin-top: .5rem; letter-spacing: 1px; }
+
+    /* ─── DEMO TERMINAL ─── */
+    #demo { position: relative; z-index: 2; max-width: 1200px; margin: 0 auto; padding: 5rem 2rem; }
+    .demo-layout {
+      display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; align-items: start;
+    }
+    @media (max-width: 768px) { .demo-layout { grid-template-columns: 1fr; } }
+
+    .api-key-group { margin-top: 1.5rem; display: flex; flex-direction: column; gap: .5rem; }
+    .api-key-group label { font-family: var(--mono); font-size: .75rem; color: var(--muted); letter-spacing: 1px; }
+    .api-input {
+      background: rgba(0,0,0,.6); border: 1px solid rgba(255,0,68,.3);
+      border-radius: 4px; color: #fff; font-family: var(--mono);
+      font-size: .85rem; padding: .6rem .8rem; width: 100%;
+      outline: none; transition: border-color .2s, box-shadow .2s;
+    }
+    .api-input:focus { border-color: var(--red); box-shadow: 0 0 10px rgba(255,0,68,.2); }
+    .api-note { font-size: .72rem; color: var(--muted); line-height: 1.5; }
+    .api-note a { color: var(--cyan); text-decoration: none; }
+
+    .demo-terminal {
+      background: rgba(0,0,0,.8); border: 1px solid rgba(255,0,68,.3);
+      border-radius: 8px; overflow: hidden;
+      box-shadow: 0 0 40px rgba(255,0,68,.08), 0 20px 60px rgba(0,0,0,.6);
+    }
+    .demo-output {
+      padding: 1rem 1.5rem; font-family: var(--mono); font-size: .82rem;
+      line-height: 1.7; min-height: 300px; max-height: 400px; overflow-y: auto; color: var(--text);
+    }
+    .demo-output::-webkit-scrollbar { width: 4px; }
+    .demo-output::-webkit-scrollbar-thumb { background: rgba(255,0,68,.3); border-radius: 2px; }
+    .demo-input-row {
+      display: flex; align-items: center; gap: .5rem; padding: .8rem 1.5rem;
+      border-top: 1px solid rgba(255,0,68,.2); background: rgba(0,0,0,.4);
+    }
+    .demo-prompt { color: var(--red); font-family: var(--mono); font-size: .85rem; white-space: nowrap; }
+    .demo-cmd-input {
+      flex: 1; background: transparent; border: none; color: #fff;
+      font-family: var(--mono); font-size: .85rem; outline: none; caret-color: var(--green);
+    }
+    .demo-send {
+      background: var(--red); border: none; color: #fff; font-family: var(--head);
+      font-size: .7rem; letter-spacing: 1px; padding: .4rem .8rem;
+      border-radius: 3px; cursor: pointer; transition: box-shadow .2s;
+    }
+    .demo-send:hover { box-shadow: 0 0 15px rgba(255,0,68,.6); }
+    .demo-send:disabled { opacity: .4; cursor: not-allowed; }
+
+    .demo-suggestions { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: .5rem; }
+    .suggestion-btn {
+      background: transparent; border: 1px solid rgba(0,255,204,.2); color: var(--cyan);
+      font-family: var(--mono); font-size: .72rem; padding: .3rem .7rem;
+      border-radius: 3px; cursor: pointer; transition: background .2s, box-shadow .2s; text-align: left;
+    }
+    .suggestion-btn:hover { background: rgba(0,255,204,.05); box-shadow: 0 0 10px rgba(0,255,204,.2); }
+
+    .ol-prompt { color: var(--red); }
+    .ol-cmd    { color: #fff; }
+    .ol-out    { color: var(--green); }
+    .ol-info   { color: var(--cyan); }
+    .ol-warn   { color: #ffcc00; }
+    .ol-err    { color: #ff5555; }
+    .ol-muted  { color: var(--muted); }
+    .ol-agent  { color: var(--text); }
+
+    /* ─── INSTALL ─── */
+    .install-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+    .install-card { background: rgba(13,0,24,.7); border: 1px solid rgba(255,0,68,.15); border-radius: 8px; overflow: hidden; }
+    .install-card-header {
+      padding: 1rem 1.5rem; background: rgba(255,0,68,.08);
+      border-bottom: 1px solid rgba(255,0,68,.15);
+      font-family: var(--head); font-size: .85rem; color: var(--red); letter-spacing: 2px;
+    }
+    .code-block {
+      padding: 1.5rem; font-family: var(--mono); font-size: .82rem;
+      line-height: 2; color: var(--green); overflow-x: auto; display: block;
+    }
+    .code-block .comment { color: var(--muted); }
+    .code-block .cmd { color: #fff; }
+    .code-block .str { color: #ff9580; }
+    .code-wrap { position: relative; }
+    .copy-btn {
+      position: absolute; top: .5rem; right: .5rem;
+      background: rgba(255,0,68,.15); border: 1px solid rgba(255,0,68,.3);
+      color: var(--red); font-family: var(--mono); font-size: .65rem;
+      padding: .2rem .5rem; border-radius: 3px; cursor: pointer; transition: background .2s;
+    }
+    .copy-btn:hover { background: rgba(255,0,68,.3); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      position: relative; z-index: 2;
+      border-top: 1px solid rgba(255,0,68,.15);
+      padding: 3rem 2rem; text-align: center;
+    }
+    .footer-logo { font-family: var(--head); font-size: 1.5rem; font-weight: 900; color: var(--red); text-shadow: 0 0 20px var(--red); margin-bottom: .5rem; }
+    .footer-tagline { font-family: var(--mono); font-size: .8rem; color: var(--muted); margin-bottom: 1.5rem; }
+    .footer-links { display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: .85rem; transition: color .2s; }
+    .footer-links a:hover { color: var(--cyan); }
+    .footer-copy { font-family: var(--mono); font-size: .7rem; color: rgba(136,146,176,.5); }
+
+    .glow-divider { width: 100%; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,0,68,.5), transparent); position: relative; z-index: 2; }
+
+    .fade-in { opacity: 0; transform: translateY(30px); transition: opacity .6s ease, transform .6s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    .spinner {
+      display: inline-block; width: 12px; height: 12px;
+      border: 2px solid rgba(255,0,68,.3); border-top-color: var(--red);
+      border-radius: 50%; animation: spin .6s linear infinite;
+      vertical-align: middle; margin-right: .4rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 640px) {
+      nav { padding: 1rem; }
+      .nav-links { display: none; }
+      .hero-buttons { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+
+<nav>
+  <div class="nav-logo">RED<span>AGENT</span></div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#demo">Live Demo</a></li>
+    <li><a href="#install">Install</a></li>
+    <li><a href="https://github.com/Insider77Circle/Red-Agent" target="_blank" class="nav-cta">GitHub</a></li>
+  </ul>
+</nav>
+
+<section id="hero">
+  <div class="hero-badge">▶ v1.0 · AI-POWERED · OPEN SOURCE</div>
+
+  <h1 class="hero-title">
+    <span class="red-part">RED</span><span class="white-part">AGENT</span>
+  </h1>
+
+  <p class="hero-subtitle">// AI-Powered Proxy Management for Security Professionals</p>
+
+  <p class="hero-desc">
+    Transform complex proxy management into simple conversations.
+    Natural language commands for proxy discovery, security auditing,
+    chain building, and full integration with your existing security toolchain.
+  </p>
+
+  <div class="hero-buttons">
+    <a href="#demo" class="btn btn-primary">Try Live Demo</a>
+    <a href="https://github.com/Insider77Circle/Red-Agent" target="_blank" class="btn btn-outline">View on GitHub</a>
+    <a href="#install" class="btn btn-outline">Quick Start</a>
+  </div>
+
+  <div class="hero-terminal">
+    <div class="terminal-bar">
+      <div class="terminal-dot td-red"></div>
+      <div class="terminal-dot td-yell"></div>
+      <div class="terminal-dot td-green"></div>
+      <span class="terminal-title">redagent — terminal</span>
+    </div>
+    <div class="terminal-body" id="hero-terminal-body">
+      <span class="t-prompt">redagent&gt; </span><span class="t-cmd" id="hero-cmd"></span><span class="cursor" id="hero-cursor"></span>
+    </div>
+  </div>
+</section>
+
+<div id="stats">
+  <div class="stat-item">
+    <div class="stat-num" data-target="5">0</div>
+    <div class="stat-label">Proxy Sources</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num" data-target="13">0</div>
+    <div class="stat-label">GitHub Topics</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num" data-target="4">0</div>
+    <div class="stat-label">Security Audits</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num" data-target="100">0</div>
+    <div class="stat-label">% Open Source</div>
+  </div>
+</div>
+
+<div class="glow-divider"></div>
+
+<section id="features">
+  <div class="section-tag">// capabilities</div>
+  <h2 class="section-title">Everything You Need for <span>Proxy Operations</span></h2>
+  <p class="section-sub">
+    RedAgent combines AI-driven natural language processing with a comprehensive toolkit
+    for the modern penetration tester and security researcher.
+  </p>
+
+  <div class="features-grid">
+    <div class="feature-card fade-in">
+      <span class="feature-icon">🤖</span>
+      <div class="feature-name">AI Natural Language Interface</div>
+      <div class="feature-desc">Skip the command memorization. Tell RedAgent what you need in plain English. "Build me a 3-hop chain through Europe" — and it's done.</div>
+      <div class="feature-tags"><span class="tag">DeepSeek LLM</span><span class="tag">Context Aware</span><span class="tag">Rich TUI</span></div>
+    </div>
+    <div class="feature-card fade-in">
+      <span class="feature-icon">🔄</span>
+      <div class="feature-name">Auto Proxy Discovery</div>
+      <div class="feature-desc">Pulls from ProxyScrape, Geonode, Proxy-List.Download, PubProxy, and Free-Proxy-List.net. Smart deduplication and instant validation.</div>
+      <div class="feature-tags"><span class="tag">5 Sources</span><span class="tag">Deduplication</span><span class="tag">Auto-validate</span></div>
+    </div>
+    <div class="feature-card fade-in">
+      <span class="feature-icon">🛡️</span>
+      <div class="feature-name">Advanced Security Auditing</div>
+      <div class="feature-desc">DNS leak detection, TLS interception detection via certificate fingerprint comparison, and content injection analysis.</div>
+      <div class="feature-tags"><span class="tag">DNS Leak</span><span class="tag">TLS MITM</span><span class="tag">Content Injection</span></div>
+    </div>
+    <div class="feature-card fade-in">
+      <span class="feature-icon">⛓️</span>
+      <div class="feature-name">Intelligent Chain Building</div>
+      <div class="feature-desc">Multi-hop proxy chains with geographic diversity. Round-robin, random, or least-latency rotation. Export to proxychains.conf instantly.</div>
+      <div class="feature-tags"><span class="tag">Multi-hop</span><span class="tag">Geo-diverse</span><span class="tag">proxychains</span></div>
+    </div>
+    <div class="feature-card fade-in">
+      <span class="feature-icon">🔌</span>
+      <div class="feature-name">Built-in Proxy Execution</div>
+      <div class="feature-desc">Execute HTTP requests, run shell commands (nmap, curl, git, pip) through proxy chains natively — no extra binaries required.</div>
+      <div class="feature-tags"><span class="tag">proxy_fetch</span><span class="tag">proxy_exec</span><span class="tag">No binaries</span></div>
+    </div>
+    <div class="feature-card fade-in">
+      <span class="feature-icon">🧅</span>
+      <div class="feature-name">Tor Integration</div>
+      <div class="feature-desc">Built-in Tor SOCKS5 support with verification via Tor Project API. Use Tor as a final hop in your proxy chain for maximum anonymity.</div>
+      <div class="feature-tags"><span class="tag">SOCKS5</span><span class="tag">Tor Verify</span><span class="tag">Chain hop</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<section id="architecture">
+  <div class="section-tag">// architecture</div>
+  <h2 class="section-title">How <span>RedAgent</span> Works</h2>
+  <p class="section-sub" style="margin: 0 auto 2rem;">A clean, layered architecture connecting AI reasoning to your actual network operations.</p>
+
+  <div class="arch-diagram fade-in">
+    <div class="arch-row"><div class="arch-node primary">👤 User Input</div></div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-row"><div class="arch-node primary">🤖 DeepSeek AI</div></div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-row"><div class="arch-node primary">🔧 Tool Registry</div></div>
+    <div style="margin:.8rem 0;display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.4rem;">
+        <div class="arch-arrow" style="margin:0">↓</div>
+        <div class="arch-node cyan">🔄 Proxy Pool</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.4rem;">
+        <div class="arch-arrow" style="margin:0">↓</div>
+        <div class="arch-node cyan">🛡️ Security Auditor</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.4rem;">
+        <div class="arch-arrow" style="margin:0">↓</div>
+        <div class="arch-node cyan">⛓️ Chain Builder</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.4rem;">
+        <div class="arch-arrow" style="margin:0">↓</div>
+        <div class="arch-node cyan">🔍 Discovery Engine</div>
+      </div>
+    </div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-row"><div class="arch-node green">🌐 External Tools &amp; Network</div></div>
+  </div>
+
+  <div class="chain-demo fade-in">
+    <div class="chain-title">// MULTI-HOP PROXY CHAIN EXAMPLE</div>
+    <div class="chain-hops">
+      <div class="hop">
+        <div class="hop-box you">YOU</div>
+        <div class="hop-flag">🇺🇸</div>
+        <div class="hop-label">Origin</div>
+      </div>
+      <div class="hop-arrow">──▶</div>
+      <div class="hop">
+        <div class="hop-box">PROXY 1</div>
+        <div class="hop-flag">🇩🇪</div>
+        <div class="hop-label">Germany</div>
+      </div>
+      <div class="hop-arrow">──▶</div>
+      <div class="hop">
+        <div class="hop-box">PROXY 2</div>
+        <div class="hop-flag">🇯🇵</div>
+        <div class="hop-label">Japan</div>
+      </div>
+      <div class="hop-arrow">──▶</div>
+      <div class="hop">
+        <div class="hop-box">PROXY 3</div>
+        <div class="hop-flag">🇧🇷</div>
+        <div class="hop-label">Brazil</div>
+      </div>
+      <div class="hop-arrow">──▶</div>
+      <div class="hop">
+        <div class="hop-box target">TARGET</div>
+        <div class="hop-flag">🎯</div>
+        <div class="hop-label">Destination</div>
+      </div>
+    </div>
+    <div class="encrypted-label">⟨ All hops encrypted · Elite anonymity · Real IP masked ⟩</div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<div id="demo">
+  <div class="demo-layout">
+    <div class="demo-info">
+      <div class="section-tag">// live demo</div>
+      <h2 class="section-title" style="font-size:1.8rem">Talk to<br/><span>RedAgent</span></h2>
+      <p style="color:var(--muted);font-size:.9rem;line-height:1.7;margin-bottom:1.5rem;">
+        Experience the AI interface directly in your browser. Enter your own DeepSeek API key —
+        it's sent only from your browser directly to DeepSeek's API. Nothing is stored or logged here.
+      </p>
+      <div class="api-key-group">
+        <label>DEEPSEEK API KEY</label>
+        <input class="api-input" type="password" id="api-key-input" placeholder="sk-xxxxxxxxxxxxxxxx" autocomplete="off" />
+        <p class="api-note">Get your free key at <a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a>. Your key never leaves your browser.</p>
+      </div>
+      <div class="demo-suggestions" style="margin-top:1.5rem;">
+        <div style="font-family:var(--mono);font-size:.7rem;color:var(--muted);width:100%;margin-bottom:.3rem;letter-spacing:1px;">TRY THESE COMMANDS:</div>
+        <button class="suggestion-btn" onclick="setSuggestion(this)">Find fast proxies in Germany</button>
+        <button class="suggestion-btn" onclick="setSuggestion(this)">Build a 3-hop chain through Europe</button>
+        <button class="suggestion-btn" onclick="setSuggestion(this)">Check for DNS leaks</button>
+        <button class="suggestion-btn" onclick="setSuggestion(this)">What proxies do I have?</button>
+        <button class="suggestion-btn" onclick="setSuggestion(this)">How does TLS interception detection work?</button>
+        <button class="suggestion-btn" onclick="setSuggestion(this)">What can you do for me?</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="demo-terminal">
+        <div class="terminal-bar">
+          <div class="terminal-dot td-red"></div>
+          <div class="terminal-dot td-yell"></div>
+          <div class="terminal-dot td-green"></div>
+          <span class="terminal-title">redagent — live session</span>
+        </div>
+        <div class="demo-output" id="demo-output">
+          <div class="ol-info">╔══════════════════════════════════════════╗</div>
+          <div class="ol-info">║  RedAgent v1.0 · AI Proxy Management     ║</div>
+          <div class="ol-info">╚══════════════════════════════════════════╝</div>
+          <div class="ol-muted">Enter your DeepSeek API key and start typing.</div>
+          <div class="ol-muted">Your key goes directly to DeepSeek — never stored here.</div>
+          <br/>
+        </div>
+        <div class="demo-input-row">
+          <span class="demo-prompt">redagent&gt;&nbsp;</span>
+          <input class="demo-cmd-input" type="text" id="demo-input" placeholder="Enter a command..." autocomplete="off" onkeydown="if(event.key==='Enter') sendDemoMessage()" />
+          <button class="demo-send" id="demo-send-btn" onclick="sendDemoMessage()">SEND</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="glow-divider"></div>
+
+<section id="install">
+  <div class="section-tag">// quick start</div>
+  <h2 class="section-title">Get <span>Running</span> in Minutes</h2>
+  <p class="section-sub">Clone, configure, and launch. RedAgent runs on any system with Python 3.11+.</p>
+
+  <div class="install-grid">
+    <div class="install-card fade-in">
+      <div class="install-card-header">01 · CLONE &amp; INSTALL</div>
+      <div class="code-wrap">
+        <pre class="code-block"><span class="comment"># Clone the repository</span>
+<span class="cmd">git clone https://github.com/Insider77Circle/Red-Agent.git</span>
+<span class="cmd">cd Red-Agent</span>
+
+<span class="comment"># Install dependencies</span>
+<span class="cmd">pip install -r requirements.txt</span></pre>
+        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+      </div>
+    </div>
+
+    <div class="install-card fade-in">
+      <div class="install-card-header">02 · CONFIGURE API KEY</div>
+      <div class="code-wrap">
+        <pre class="code-block"><span class="comment"># Copy the environment template</span>
+<span class="cmd">cp .env.example .env</span>
+
+<span class="comment"># Add your DeepSeek API key</span>
+<span class="comment"># Get one free at platform.deepseek.com</span>
+<span class="cmd">nano .env</span>
+
+<span class="comment"># Set this value:</span>
+<span class="str">DEEPSEEK_API_KEY=sk-your-key-here</span></pre>
+        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+      </div>
+    </div>
+
+    <div class="install-card fade-in">
+      <div class="install-card-header">03 · LAUNCH &amp; OPERATE</div>
+      <div class="code-wrap">
+        <pre class="code-block"><span class="comment"># Launch RedAgent</span>
+<span class="cmd">python main.py</span>
+
+<span class="comment"># Example commands to try:</span>
+<span class="str">"Find me fast proxies and check DNS leaks"</span>
+<span class="str">"Build a 3-hop chain through Europe"</span>
+<span class="str">"Run nmap through my proxy chain"</span></pre>
+        <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">REDAGENT</div>
+  <div class="footer-tagline">// AI-Powered Proxy Management · Built for Security Professionals</div>
+  <div class="footer-links">
+    <a href="https://github.com/Insider77Circle/Red-Agent" target="_blank">GitHub</a>
+    <a href="https://github.com/Insider77Circle/Red-Agent/blob/main/README.md" target="_blank">Documentation</a>
+    <a href="https://github.com/Insider77Circle/Red-Agent/issues" target="_blank">Issues</a>
+    <a href="https://github.com/Insider77Circle/Red-Agent/blob/main/LICENSE" target="_blank">MIT License</a>
+    <a href="https://platform.deepseek.com" target="_blank">Get DeepSeek Key</a>
+  </div>
+  <div class="footer-copy">© 2025 Insider77Circle · MIT License · Powered by DeepSeek AI</div>
+</footer>
+
+<script>
+// ── MATRIX RAIN ──
+(function(){
+  const c = document.getElementById('matrix');
+  const ctx = c.getContext('2d');
+  let W, H, cols, drops;
+  const chars = 'ｦｧｨｩｪｫｬｭｮｯアイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789ABCDEF';
+  function init(){
+    W = c.width = window.innerWidth;
+    H = c.height = window.innerHeight;
+    cols = Math.floor(W/18);
+    drops = Array(cols).fill(0).map(()=>Math.random()*-100);
+  }
+  function draw(){
+    ctx.fillStyle='rgba(5,0,10,0.05)';
+    ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#ff0044';
+    ctx.font='14px monospace';
+    for(let i=0;i<cols;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*18,drops[i]*18);
+      if(drops[i]*18>H&&Math.random()>.975) drops[i]=0;
+      drops[i]++;
+    }
+  }
+  init();
+  window.addEventListener('resize',init);
+  setInterval(draw,45);
+})();
+
+// ── HERO TYPEWRITER ──
+(function(){
+  const seqs=[
+    {cmd:'discover proxies --country DE --anonymous',
+     outs:['<span class="t-info">[*] Fetching from ProxyScrape, Geonode...</span>',
+           '<span class="t-out">[+] 47 proxies discovered · 31 alive · 16 dropped</span>']},
+    {cmd:'build chain --hops 3 --geo-diverse',
+     outs:['<span class="t-info">[*] Selecting geographically diverse proxies...</span>',
+           '<span class="t-out">[+] Chain: 185.24.x.x (DE) → 103.x.x.x (JP) → 189.x.x.x (BR)</span>',
+           '<span class="t-out">[+] proxychains.conf exported · Active config applied</span>']},
+    {cmd:'audit --dns-leak --tls-check',
+     outs:['<span class="t-info">[*] Running DNS leak test...</span>',
+           '<span class="t-out">[+] DNS: No leaks detected · Elite anonymity confirmed</span>',
+           '<span class="t-out">[+] TLS: Certificate fingerprints match · No MITM detected</span>']},
+  ];
+  let si=0,ci=0,oi=0;
+
+  function getBody(){ return document.getElementById('hero-terminal-body'); }
+  function getCmd(){ return document.getElementById('hero-cmd'); }
+
+  function typeChar(){
+    const el=getCmd(); if(!el) return;
+    const seq=seqs[si];
+    if(ci<seq.cmd.length){ el.textContent+=seq.cmd[ci++]; setTimeout(typeChar,55); }
+    else{ oi=0; setTimeout(showOut,600); }
+  }
+
+  function showOut(){
+    const body=getBody(); if(!body) return;
+    const seq=seqs[si];
+    if(oi<seq.outs.length){
+      const d=document.createElement('div');
+      d.innerHTML=seq.outs[oi++];
+      body.insertBefore(d,body.lastElementChild);
+      setTimeout(showOut,500);
+    } else { setTimeout(nextSeq,2000); }
+  }
+
+  function nextSeq(){
+    si=(si+1)%seqs.length; ci=0; oi=0;
+    const body=getBody(); if(!body) return;
+    body.innerHTML=`<span class="t-prompt">redagent&gt; </span><span class="t-cmd" id="hero-cmd"></span><span class="cursor" id="hero-cursor"></span>`;
+    setTimeout(typeChar,400);
+  }
+
+  setTimeout(typeChar,1000);
+})();
+
+// ── STAT COUNTERS ──
+(function(){
+  let done=false;
+  const obs=new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting&&!done){
+      done=true;
+      document.querySelectorAll('.stat-num[data-target]').forEach(el=>{
+        const t=+el.dataset.target; let c=0;
+        const step=Math.ceil(t/40);
+        const id=setInterval(()=>{ c=Math.min(c+step,t); el.textContent=c; if(c>=t) clearInterval(id); },40);
+      });
+    }
+  });
+  obs.observe(document.getElementById('stats'));
+})();
+
+// ── SCROLL FADE ──
+(function(){
+  const obs=new IntersectionObserver(entries=>entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); }),{threshold:.15});
+  document.querySelectorAll('.fade-in').forEach(e=>obs.observe(e));
+})();
+
+// ── COPY BUTTON ──
+function copyCode(btn){
+  const text=btn.previousElementSibling.innerText;
+  navigator.clipboard.writeText(text).then(()=>{ btn.textContent='COPIED!'; setTimeout(()=>btn.textContent='COPY',2000); });
+}
+
+// ── DEMO TERMINAL ──
+const SYSTEM_PROMPT=`You are RedAgent, an advanced proxy management AI assistant running in a CLI terminal.
+
+## Identity
+You are a technical expert in proxy servers, network privacy, internet security, and proxychains configuration. You are precise, efficient, and security-conscious. Direct, no-nonsense communication style.
+
+## Capabilities (this is a DEMO — explain what you would do, show realistic example output)
+- Proxy Pool Management: add, remove, list, health check proxies
+- Auto-Discovery from 5 public sources (ProxyScrape, Geonode, Proxy-List.Download, PubProxy, Free-Proxy-List.net)
+- Intelligent Routing and multi-hop chain building with geographic diversity
+- Security Analysis: DNS leak detection, TLS interception detection, content injection analysis
+- Proxychains config generation for Linux tools (nmap, curl, etc.)
+- Tor SOCKS5 integration and verification
+- Built-in proxy execution: proxy_fetch, proxy_exec, proxy_curl (native Python, no extra binaries)
+
+## Response Style
+- Terminal-friendly, concise but thorough
+- Use markdown code blocks for configs and example output
+- Always note: free public proxies should NEVER be used for sensitive data
+- For demo purposes, show realistic simulated output when describing what the tool would do`;
+
+let history=[];
+
+function addLine(html,cls){
+  const out=document.getElementById('demo-output');
+  const d=document.createElement('div');
+  if(cls) d.className=cls;
+  d.innerHTML=html;
+  out.appendChild(d);
+  out.scrollTop=out.scrollHeight;
+}
+
+function setSuggestion(btn){
+  document.getElementById('demo-input').value=btn.textContent;
+  document.getElementById('demo-input').focus();
+}
+
+async function sendDemoMessage(){
+  const key=document.getElementById('api-key-input').value.trim();
+  const inp=document.getElementById('demo-input');
+  const btn=document.getElementById('demo-send-btn');
+  const msg=inp.value.trim();
+  if(!key){ addLine('<span class="ol-err">[!] Enter your DeepSeek API key first.</span>'); document.getElementById('api-key-input').focus(); return; }
+  if(!msg) return;
+
+  addLine(`<span class="ol-prompt">redagent&gt; </span><span class="ol-cmd">${esc(msg)}</span>`);
+  inp.value=''; btn.disabled=true; inp.disabled=true;
+
+  const lid='l'+Date.now();
+  addLine(`<div id="${lid}"><span class="spinner"></span><span class="ol-muted">Thinking...</span></div>`);
+
+  history.push({role:'user',content:msg});
+
+  try{
+    const res=await fetch('https://api.deepseek.com/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+      body:JSON.stringify({model:'deepseek-chat',messages:[{role:'system',content:SYSTEM_PROMPT},...history],max_tokens:700,temperature:0.7})
+    });
+    document.getElementById(lid)?.remove();
+    if(!res.ok){
+      const e=await res.json().catch(()=>({}));
+      addLine(`<span class="ol-err">[!] API Error: ${esc(e?.error?.message||'HTTP '+res.status)}</span>`);
+      history.pop();
+    } else {
+      const data=await res.json();
+      const reply=data.choices?.[0]?.message?.content||'(no response)';
+      history.push({role:'assistant',content:reply});
+      addLine(`<div class="ol-agent">${md(reply)}</div>`);
+    }
+  } catch(e){
+    document.getElementById(lid)?.remove();
+    addLine(`<span class="ol-err">[!] ${esc(e.message)}</span>`);
+    addLine(`<span class="ol-muted">    CORS may block this in some browsers. Try Firefox or install locally.</span>`);
+    history.pop();
+  }
+
+  addLine('<br/>');
+  btn.disabled=false; inp.disabled=false; inp.focus();
+}
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function md(t){
+  let h=esc(t);
+  h=h.replace(/```[\w]*\n?([\s\S]*?)```/g,'<pre style="background:rgba(0,0,0,.5);border:1px solid rgba(255,0,68,.2);border-radius:4px;padding:.6rem;margin:.4rem 0;color:#00ff41;overflow-x:auto;white-space:pre-wrap">$1</pre>');
+  h=h.replace(/`([^`]+)`/g,'<code style="background:rgba(255,0,68,.1);color:#ff9580;padding:.1rem .3rem;border-radius:3px">$1</code>');
+  h=h.replace(/\*\*([^*]+)\*\*/g,'<strong style="color:#fff">$1</strong>');
+  h=h.replace(/\n/g,'<br/>');
+  return h;
+}
+</script>
+</body>
+</html>
