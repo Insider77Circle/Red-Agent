@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="banner.svg" alt="RED-AGENT" width="100%"/>
+</p>
+
 # RedAgent 🤖🔒
 
 **AI-Powered Proxy Management for Cybersecurity Professionals**
