@@ -1,0 +1,169 @@
+<svg width="900" height="170" viewBox="0 0 900 170" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="900" y2="170" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0d0606"/>
+      <stop offset="50%" stop-color="#1a0a0a"/>
+      <stop offset="100%" stop-color="#0d0808"/>
+    </linearGradient>
+    <linearGradient id="titleGrad" x1="183" y1="0" x2="700" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#ef4444"/>
+      <stop offset="35%"  stop-color="#fb923c"/>
+      <stop offset="70%"  stop-color="#f87171"/>
+      <stop offset="100%" stop-color="#ef4444"/>
+    </linearGradient>
+    <linearGradient id="lineGrad" x1="0" y1="0" x2="900" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#ef4444" stop-opacity="0"/>
+      <stop offset="15%"  stop-color="#ef4444" stop-opacity="1"/>
+      <stop offset="50%"  stop-color="#fb923c" stop-opacity="1"/>
+      <stop offset="85%"  stop-color="#ef4444" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#ef4444" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="targetGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#ef4444" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#ef4444" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="centerFill" cx="40%" cy="40%" r="60%">
+      <stop offset="0%"   stop-color="#fb923c"/>
+      <stop offset="100%" stop-color="#7f1d1d"/>
+    </radialGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="170" rx="10" fill="url(#bg)"/>
+
+  <!-- Dot grid (red tint, left zone) -->
+  <g opacity="0.07" fill="#ef4444">
+    <circle cx="20"  cy="20"  r="1.2"/><circle cx="40"  cy="20"  r="1.2"/><circle cx="60"  cy="20"  r="1.2"/>
+    <circle cx="80"  cy="20"  r="1.2"/><circle cx="100" cy="20"  r="1.2"/><circle cx="120" cy="20"  r="1.2"/>
+    <circle cx="140" cy="20"  r="1.2"/><circle cx="160" cy="20"  r="1.2"/>
+    <circle cx="20"  cy="40"  r="1.2"/><circle cx="40"  cy="40"  r="1.2"/><circle cx="60"  cy="40"  r="1.2"/>
+    <circle cx="80"  cy="40"  r="1.2"/><circle cx="100" cy="40"  r="1.2"/><circle cx="120" cy="40"  r="1.2"/>
+    <circle cx="140" cy="40"  r="1.2"/><circle cx="160" cy="40"  r="1.2"/>
+    <circle cx="20"  cy="60"  r="1.2"/><circle cx="40"  cy="60"  r="1.2"/><circle cx="60"  cy="60"  r="1.2"/>
+    <circle cx="80"  cy="60"  r="1.2"/><circle cx="100" cy="60"  r="1.2"/><circle cx="120" cy="60"  r="1.2"/>
+    <circle cx="140" cy="60"  r="1.2"/><circle cx="160" cy="60"  r="1.2"/>
+    <circle cx="20"  cy="80"  r="1.2"/><circle cx="40"  cy="80"  r="1.2"/><circle cx="60"  cy="80"  r="1.2"/>
+    <circle cx="80"  cy="80"  r="1.2"/><circle cx="100" cy="80"  r="1.2"/><circle cx="120" cy="80"  r="1.2"/>
+    <circle cx="140" cy="80"  r="1.2"/><circle cx="160" cy="80"  r="1.2"/>
+    <circle cx="20"  cy="100" r="1.2"/><circle cx="40"  cy="100" r="1.2"/><circle cx="60"  cy="100" r="1.2"/>
+    <circle cx="80"  cy="100" r="1.2"/><circle cx="100" cy="100" r="1.2"/><circle cx="120" cy="100" r="1.2"/>
+    <circle cx="140" cy="100" r="1.2"/><circle cx="160" cy="100" r="1.2"/>
+    <circle cx="20"  cy="120" r="1.2"/><circle cx="40"  cy="120" r="1.2"/><circle cx="60"  cy="120" r="1.2"/>
+    <circle cx="80"  cy="120" r="1.2"/><circle cx="100" cy="120" r="1.2"/><circle cx="120" cy="120" r="1.2"/>
+    <circle cx="140" cy="120" r="1.2"/><circle cx="160" cy="120" r="1.2"/>
+    <circle cx="20"  cy="140" r="1.2"/><circle cx="40"  cy="140" r="1.2"/><circle cx="60"  cy="140" r="1.2"/>
+    <circle cx="80"  cy="140" r="1.2"/><circle cx="100" cy="140" r="1.2"/><circle cx="120" cy="140" r="1.2"/>
+    <circle cx="140" cy="140" r="1.2"/><circle cx="160" cy="140" r="1.2"/>
+  </g>
+
+  <!-- Target glow halo -->
+  <circle cx="83" cy="85" r="62" fill="url(#targetGlow)"/>
+
+  <!-- Outer ring -->
+  <circle cx="83" cy="85" r="53" fill="none" stroke="#ef4444" stroke-width="2" opacity="0.85" filter="url(#softGlow)"/>
+  <!-- Middle ring -->
+  <circle cx="83" cy="85" r="36" fill="none" stroke="#f87171" stroke-width="1.5" opacity="0.6"/>
+  <!-- Inner ring -->
+  <circle cx="83" cy="85" r="21" fill="none" stroke="#fb923c" stroke-width="1.5" opacity="0.8"/>
+
+  <!-- Center fill -->
+  <circle cx="83" cy="85" r="8" fill="url(#centerFill)" filter="url(#softGlow)"/>
+  <!-- Center catchlight -->
+  <circle cx="79" cy="81" r="2.5" fill="#fff" opacity="0.6"/>
+  <circle cx="88" cy="90" r="1.2" fill="#fff" opacity="0.25"/>
+
+  <!-- Crosshair arms (with gap at center) -->
+  <line x1="83" y1="24"  x2="83" y2="64"  stroke="#ef4444" stroke-width="1.5" opacity="0.9" filter="url(#softGlow)"/>
+  <line x1="83" y1="106" x2="83" y2="146" stroke="#ef4444" stroke-width="1.5" opacity="0.9" filter="url(#softGlow)"/>
+  <line x1="22" y1="85"  x2="62" y2="85"  stroke="#ef4444" stroke-width="1.5" opacity="0.9" filter="url(#softGlow)"/>
+  <line x1="104" y1="85" x2="144" y2="85" stroke="#ef4444" stroke-width="1.5" opacity="0.9" filter="url(#softGlow)"/>
+
+  <!-- Small tick marks at inner ring edges -->
+  <line x1="79" y1="64"  x2="87" y2="64"  stroke="#fb923c" stroke-width="1" opacity="0.6"/>
+  <line x1="79" y1="106" x2="87" y2="106" stroke="#fb923c" stroke-width="1" opacity="0.6"/>
+  <line x1="62" y1="81"  x2="62" y2="89"  stroke="#fb923c" stroke-width="1" opacity="0.6"/>
+  <line x1="104" y1="81" x2="104" y2="89" stroke="#fb923c" stroke-width="1" opacity="0.6"/>
+
+  <!-- Signal arcs (radar ping, right side) -->
+  <path d="M 113 70 Q 134 85 113 100" fill="none" stroke="#fb923c" stroke-width="1.5" opacity="0.5"/>
+  <path d="M 122 62 Q 148 85 122 108" fill="none" stroke="#fb923c" stroke-width="1"   opacity="0.3"/>
+  <path d="M 131 55 Q 162 85 131 115" fill="none" stroke="#fb923c" stroke-width="0.8" opacity="0.15"/>
+
+  <!-- Corner tick marks on outer ring -->
+  <line x1="10"  y1="85" x2="22"  y2="85" stroke="#ef4444" stroke-width="1.5" opacity="0.5"/>
+  <line x1="144" y1="85" x2="156" y2="85" stroke="#ef4444" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- Vertical divider -->
+  <line x1="165" y1="18" x2="165" y2="152" stroke="#ef4444" stroke-width="1" opacity="0.25"/>
+
+  <!-- Main title -->
+  <text x="183" y="70"
+        font-family="'Courier New', Courier, monospace"
+        font-size="52" font-weight="700" letter-spacing="7"
+        fill="url(#titleGrad)" filter="url(#glow)">RED-AGENT</text>
+
+  <!-- Subtitle -->
+  <text x="186" y="95"
+        font-family="'Courier New', Courier, monospace"
+        font-size="12" letter-spacing="3" fill="#64748b">DISCOVER  ·  CHAIN  ·  EVADE</text>
+
+  <!-- Separator line -->
+  <rect x="183" y="106" width="560" height="1.5" fill="url(#lineGrad)" opacity="0.9"/>
+
+  <!-- Quote -->
+  <text x="186" y="128"
+        font-family="'Courier New', Courier, monospace"
+        font-size="11" font-style="italic" fill="#475569">"Natural language proxy control for operators who move fast."</text>
+
+  <!-- Version badge -->
+  <rect x="186" y="139" width="62" height="18" rx="3" fill="none" stroke="#ef4444" stroke-width="1" opacity="0.5"/>
+  <text x="217" y="151" font-family="'Courier New', Courier, monospace"
+        font-size="10" text-anchor="middle" fill="#ef4444" opacity="0.8">v 1.0.0</text>
+
+  <!-- Author badge -->
+  <rect x="257" y="139" width="78" height="18" rx="3" fill="none" stroke="#fb923c" stroke-width="1" opacity="0.5"/>
+  <text x="296" y="151" font-family="'Courier New', Courier, monospace"
+        font-size="10" text-anchor="middle" fill="#fb923c" opacity="0.8">Insider747</text>
+
+  <!-- Right-side capability badges -->
+  <!-- PROXY CHAINS -->
+  <rect x="755" y="18"  width="128" height="29" rx="5" fill="#1a0808" stroke="#ef4444" stroke-width="1.2"/>
+  <text x="819" y="37"  font-family="'Courier New', Courier, monospace"
+        font-size="11" font-weight="700" text-anchor="middle" letter-spacing="1" fill="#ef4444">&#9650; PROXY CHAINS</text>
+
+  <!-- NL INTERFACE -->
+  <rect x="755" y="55"  width="128" height="29" rx="5" fill="#1a1008" stroke="#f59e0b" stroke-width="1.2"/>
+  <text x="819" y="74"  font-family="'Courier New', Courier, monospace"
+        font-size="11" font-weight="700" text-anchor="middle" letter-spacing="1" fill="#f59e0b">&#9632; NL INTERFACE</text>
+
+  <!-- TOR ROUTING -->
+  <rect x="755" y="92"  width="128" height="29" rx="5" fill="#0d0d1a" stroke="#818cf8" stroke-width="1.2"/>
+  <text x="819" y="111" font-family="'Courier New', Courier, monospace"
+        font-size="11" font-weight="700" text-anchor="middle" letter-spacing="1" fill="#818cf8">&#9670; TOR  ROUTING</text>
+
+  <!-- SEC AUDIT -->
+  <rect x="755" y="129" width="128" height="29" rx="5" fill="#0c1a0c" stroke="#22c55e" stroke-width="1.2"/>
+  <text x="819" y="148" font-family="'Courier New', Courier, monospace"
+        font-size="11" font-weight="700" text-anchor="middle" letter-spacing="1" fill="#22c55e">&#9679; SEC   AUDIT</text>
+
+  <!-- Corner accents -->
+  <line x1="5"   y1="18"  x2="18"  y2="18"  stroke="#ef4444" stroke-width="1.5" opacity="0.6"/>
+  <line x1="5"   y1="18"  x2="5"   y2="32"  stroke="#ef4444" stroke-width="1.5" opacity="0.6"/>
+  <line x1="895" y1="18"  x2="882" y2="18"  stroke="#fb923c" stroke-width="1.5" opacity="0.6"/>
+  <line x1="895" y1="18"  x2="895" y2="32"  stroke="#fb923c" stroke-width="1.5" opacity="0.6"/>
+  <line x1="5"   y1="152" x2="18"  y2="152" stroke="#fb923c" stroke-width="1.5" opacity="0.6"/>
+  <line x1="5"   y1="152" x2="5"   y2="138" stroke="#fb923c" stroke-width="1.5" opacity="0.6"/>
+  <line x1="895" y1="152" x2="882" y2="152" stroke="#ef4444" stroke-width="1.5" opacity="0.6"/>
+  <line x1="895" y1="152" x2="895" y2="138" stroke="#ef4444" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Outer border -->
+  <rect width="900" height="170" rx="10" fill="none" stroke="#ef4444" stroke-width="1" opacity="0.2"/>
+</svg>
