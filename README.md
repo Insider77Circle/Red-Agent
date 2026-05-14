@@ -23,7 +23,7 @@ Traditional proxy management requires memorizing complex commands and manual con
 
 ## 🎬 Demo
 
-https://github.com/Insider77Circle/Red-Agent/raw/main/assets/redagent-demo.mp4
+![Demo](assets/demo.gif)
 
 ## 🚀 Quick Start
 
