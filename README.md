@@ -1,18 +1,10 @@
-<p align="center">
-  <img src="banner.svg" alt="RED-AGENT" width="100%"/>
-</p>
 
-# RedAgent 🤖🔒
 
-**AI-Powered Proxy Management for Cybersecurity Professionals**
 
-[![Python Version](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitHub Stars](https://img.shields.io/github/stars/Insider77Circle/Red-Agent?style=social)](https://github.com/Insider77Circle/Red-Agent)
 
-RedAgent transforms complex proxy management into simple conversations. Using natural language processing with DeepSeek AI, it automates proxy discovery, security auditing, chain building, and integration with security tools like nmap and proxychains.
 
-## 🎯 Why RedAgent?
+
+<p align="center">   <img src="banner.svg" alt="RED-AGENT" width="100%"/> </p>  # RedAgent 🤖🔒 > Talk to your proxies. They're listening. RedAgent is a proxy command center you drive with plain English. "Build me a 3-hop chain through Europe" → it discovers proxies, audits them for DNS leaks and TLS interception, builds the chain, and hands you a proxychains config. No flag-memorizing. ```bash git clone https://github.com/Insider77Circle/Red-Agent.git && cd Red-Agent pip install -r requirements.txt cp .env.example .env   # add your DeepSeek API key python main.py ``` Then: `"Find me fast proxies and check for DNS leaks"`  ## 🎯 Why RedAgent?
 
 Traditional proxy management requires memorizing complex commands and manual configuration. RedAgent revolutionizes this by:
 
